@@ -1,0 +1,11 @@
+leagues.json
+espn.json
+nfl.json
+espn.js
+collect.js
+out/
+fw/
+__pycache__/
+*.pyc
+.DS_Store
+fantasy-watch/scripts/settings.json

@@ -1,0 +1,11 @@
+{
+  "timezone": "America/Chicago",
+  "league_priority": [
+    {"match": "Main League", "importance": 100},
+    {"match": "Dynasty", "importance": 90},
+    {"match": "Work League", "importance": 70}
+  ],
+  "default_league_importance": 40,
+  "league_scoring": {"Work League": "half"},
+  "league_display": {"Wrok Leauge": "Work League"}
+}

@@ -1,0 +1,201 @@
+<title>Fantasy Watch Week __WEEK__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: scoreboard header -> alerts -> ranked watch list with meters -> games grouped by kickoff window */
+:root{
+  --bg:#f3f4f1; --surface:#ffffff; --ink:#15191f; --muted:#5d6670; --line:#dde1dc;
+  --accent:#c47a00; --accent-soft:#fbefd9; --you:#1f6f4a; --you-soft:#e3f2ea; --opp:#a3372e; --opp-soft:#f8e6e3;
+  --meter:#e7e9e4; --warn:#a3372e;
+  --display:"Saira Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1318; --surface:#171c23; --ink:#eef1ee; --muted:#9aa4ad; --line:#28303a;
+  --accent:#f2a93b; --accent-soft:#3a2c14; --you:#5fc795; --you-soft:#16301f; --opp:#f08a7e; --opp-soft:#3a1d1a;
+  --meter:#252c35; --warn:#f08a7e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1318; --surface:#171c23; --ink:#eef1ee; --muted:#9aa4ad; --line:#28303a;
+  --accent:#f2a93b; --accent-soft:#3a2c14; --you:#5fc795; --you-soft:#16301f; --opp:#f08a7e; --opp-soft:#3a1d1a;
+  --meter:#252c35; --warn:#f08a7e; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:.01em}
+.eyebrow{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:var(--muted)}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 20px;border-bottom:3px solid var(--ink);padding-bottom:12px}
+header.top h1{font-size:clamp(34px,7vw,52px);font-weight:800;line-height:.95;text-transform:uppercase}
+header.top h1 span{color:var(--accent)}
+.note{font-size:13px;color:var(--muted)}
+.alerts{background:var(--opp-soft);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.alerts h2{font-size:16px;text-transform:uppercase;letter-spacing:.08em;color:var(--warn)}
+.alerts ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px}
+.alertgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;align-items:start}
+.alerts.eye{background:var(--accent-soft)}
+.mtable{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.mrow{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) 92px;gap:6px 12px;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.mrow.head{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:11.5px;font-weight:600;color:var(--muted);padding-block:6px}
+.mrow .lgname{font-weight:600;min-width:0}
+.mrow .opp-name{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.mrow .pts{font-weight:700;font-size:16px}
+.mrow .pj{font-size:12px;color:var(--muted)}
+.status{font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px;justify-self:end;background:var(--meter);white-space:nowrap}
+.status.good{background:var(--you-soft);color:var(--you)} .status.bad{background:var(--opp-soft);color:var(--opp)}
+.perf{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
+.perf section{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.perf h3{font-size:16px;text-transform:uppercase;letter-spacing:.08em}
+.perf .up h3{color:var(--you)} .perf .down h3{color:var(--opp)}
+.perf ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.perf li{font-size:14px}
+.perf .line{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.perf .d{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.perf .up .d{color:var(--you)} .perf .down .d{color:var(--opp)}
+.perf small{display:block;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.live{color:var(--opp);font-weight:700}
+.ppts{font-variant-numeric:tabular-nums;color:var(--muted);margin-left:6px;font-weight:600}
+.rowpts{display:block;font-size:12px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.mrow{grid-template-columns:minmax(0,1fr) auto auto;}.mrow .opp-col{display:none}.mrow.head .opp-col{display:none}}
+.alerts.eye h2{color:var(--accent)}
+.plist .out{color:var(--muted);text-decoration:line-through}
+.plist .out-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--warn);margin-left:4px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.sec-h h2{font-size:24px;font-weight:700;text-transform:uppercase}
+.rank{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.rank a{display:grid;grid-template-columns:28px minmax(0,1fr) 120px;align-items:center;gap:6px 12px;padding:9px 4px;border-bottom:1px solid var(--line);color:inherit;text-decoration:none}
+.rank a:hover,.rank a:focus-visible{background:var(--surface);outline:none}
+.rank a:focus-visible{box-shadow:inset 0 0 0 2px var(--accent)}
+.rk{font-family:var(--display);font-weight:700;font-size:20px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.mu{min-width:0;display:flex;flex-direction:column}
+.mu b{font-weight:600}
+.mu small{color:var(--muted);font-size:12.5px}
+.mu.final b{text-decoration:line-through;color:var(--muted)}
+.meter{display:flex;flex-direction:column;gap:3px;align-items:flex-end}
+.meter .val{font-family:var(--display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;line-height:1}
+.bar{width:100%;height:6px;background:var(--meter);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.bar i.cold{background:var(--muted);opacity:.55}
+.slot{display:flex;flex-direction:column;gap:14px}
+.slot>h3{font-size:15px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line);padding-bottom:4px}
+.game{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;scroll-margin-top:16px}
+.ghead{padding:14px 16px 12px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line)}
+.teams{font-family:var(--display);font-size:clamp(20px,4.6vw,26px);font-weight:700;line-height:1.1}
+.teams .rec{font-weight:500;color:var(--muted);font-size:.8em}
+.teams .vs{font-weight:500;color:var(--muted);font-size:.75em;padding:0 4px}
+.meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 14px}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--bg)}
+.stat{display:flex;flex-direction:column;gap:1px;min-width:0}
+.stat .k{font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--muted);font-weight:600}
+.stat .v{font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
+.stat .note{font-size:12px;color:var(--muted)}
+.leagues{display:flex;flex-direction:column}
+.lg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px 14px;padding:10px 16px;border-bottom:1px solid var(--line);align-items:start}
+.lg:last-child{border-bottom:0}
+.lg .name{font-weight:600;font-size:14px}
+.plist{display:flex;flex-direction:column;gap:2px;font-size:14px;min-width:0}
+.plist .lab{display:none;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:600}
+.plist.you .lab{color:var(--you)} .plist.opp .lab{color:var(--opp)}
+.plist .qb,.alerts .qb{font-weight:700}
+.plist .none{color:var(--muted)}
+.pill{font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;justify-self:end;background:var(--meter)}
+.pill.allin{background:var(--you-soft);color:var(--you)}
+.pill.slight{background:var(--accent-soft);color:var(--accent)}
+.pill.conf{background:var(--opp-soft);color:var(--opp)}
+.lghead{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) auto;gap:14px;padding:8px 16px 0;font-family:var(--display);text-transform:uppercase;letter-spacing:.1em;font-size:11.5px;font-weight:600;color:var(--muted)}
+.empty{padding:12px 16px;color:var(--muted);font-size:14px}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+@media (max-width:640px){
+  .rank a{grid-template-columns:24px minmax(0,1fr) 84px}
+  .lghead{display:none}
+  .lg{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .lg .name{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .lg>.pill{display:none}
+  .lg .name .pill{display:inline-block}
+  .plist .lab{display:block}
+}
+@media (min-width:641px){.lg .name .pill{display:none}}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .4s ease}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+const D = /*DATA*/null;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pillClass = r => r.startsWith('All In') ? 'allin' : r.startsWith('Slightly') ? 'slight' : r.includes('Conflicted') ? 'conf' : '';
+const player = p => `<span class="${p.qb ? 'qb' : ''}"><span class="${p.out ? 'out' : ''}">${esc(p.p.replace(/\*\*/g, ''))}</span>${p.out ? `<span class="out-tag">${esc(p.out)}</span>` : ''}${p.pts != null ? `<span class="ppts">${p.pts.toFixed(1)}</span>` : ''}</span>`;
+const f1 = v => v == null ? '—' : v.toFixed(1);
+const stClass = s => (s === 'Won' || s === 'Leading') ? 'good' : (s === 'Lost' || s === 'Trailing') ? 'bad' : '';
+const gameLine = g => g.state === 'post' ? `Final: ${esc(g.away)} ${g.score[0]}–${g.score[1]} ${esc(g.home)}`
+  : g.state === 'in' ? `<span class="live">● ${esc(g.status)}</span> · ${esc(g.away)} ${g.score[0]}–${g.score[1]} ${esc(g.home)}`
+  : `${esc(g.day)} · ${esc(g.time)} ${D.tz}`;
+const slotName = g => { const d = new Date(g.kickoff); return `${g.day} · ${g.time} ${D.tz}`; };
+
+function render(){
+  const ranked = [...D.games].sort((a,b) => b.watch - a.watch || a.kickoff.localeCompare(b.kickoff) || a.id.localeCompare(b.id));
+  const chrono = [...D.games].sort((a,b) => a.kickoff.localeCompare(b.kickoff) || a.id.localeCompare(b.id));
+  const slots = []; for (const g of chrono){ const k = slotName(g); const s = slots.at(-1); if (s && s.k === k) s.g.push(g); else slots.push({k, g:[g]}); }
+
+  let h = `<header class="top"><div><div class="eyebrow">${D.season} season · Week ${D.week}</div><h1>Fantasy <span>Watch</span></h1></div>
+    <div class="note">${D.games.length} games · ranked by how much you have riding on them</div></header>`;
+
+  if (D.sample) h += `<div class="alerts"><h2>Sample data</h2><div>Real Week ${D.week} NFL slate and projections, made-up rosters. Not your actual lineups.</div></div>`;
+  const who = a => a.player ? `${a.player.startsWith('**') ? `<span class="qb">${esc(a.player.replace(/\*\*/g,''))}</span>` : esc(a.player)} — ${esc(a.why)}` : esc(a.why);
+  const fix = D.alerts.filter(a => a.level === 'fix'), eye = D.alerts.filter(a => a.level === 'watch');
+  const mine = D.unresolved.filter(u => u.side === 'user'), theirs = D.unresolved.filter(u => u.side !== 'user');
+  if (fix.length || mine.length || eye.length){
+    h += `<div class="alertgrid">`;
+    if (fix.length || mine.length) h += `<section class="alerts" aria-label="Fix now"><h2>Fix now</h2><ul>` +
+      fix.map(a => `<li><b>${esc(a.league)}</b>: ${who(a)}</li>`).join('') +
+      mine.map(u => `<li><b>${esc(u.league)}</b>: ${esc(u.name)} couldn't be matched, so it's left out of the scores</li>`).join('') +
+      `</ul></section>`;
+    if (eye.length) h += `<section class="alerts eye" aria-label="Keep an eye on"><h2>Keep an eye on</h2><ul>` +
+      eye.map(a => `<li><b>${esc(a.league)}</b>: ${who(a)}</li>`).join('') + `</ul></section>`;
+    h += `</div>`;
+  }
+  if (D.fallback_used) h += `<div class="note">Projection data was missing for some of your players; position averages stand in for their impact.</div>`;
+
+  const side = t => t.points != null ? `<span class="pts">${f1(t.points)}</span> <span class="pj">proj ${f1(t.proj)}</span>` : `<span class="pj">proj ${f1(t.proj)}</span>`;
+  h += `<section><div class="sec-h"><h2>Matchups</h2><span class="eyebrow">${D.week_state === 'final' ? 'Final' : D.week_state === 'live' ? 'Live' : 'Projected'}</span></div><div class="mtable">
+    <div class="mrow head"><span>League</span><span>You</span><span class="opp-col">Opponent</span><span style="justify-self:end">Status</span></div>` +
+    D.matchups.map(m => `<div class="mrow"><span class="lgname">${esc(m.league)}<span class="opp-name">vs ${esc(m.opponent)}</span></span>
+      <span>${side(m.user)}</span><span class="opp-col">${side(m.opp)}</span><span class="status ${stClass(m.status)}">${esc(m.status)}</span></div>`).join('') + `</div></section>`;
+  const perfItem = x => `<li><div class="line"><span class="${x.qb ? 'qb' : ''}">${esc(x.player.replace(/\*\*/g,''))}</span><span class="d">${x.diff > 0 ? '+' : ''}${x.diff.toFixed(1)}</span></div>
+      <small>${x.actual.toFixed(1)} pts vs ${x.proj.toFixed(1)} projected · ${x.leagues.length > 1 ? `${x.leagues.length} leagues` : esc(x.leagues[0])}</small></li>`;
+  if (D.over.length || D.under.length) h += `<section><div class="sec-h"><h2>Results vs projections</h2><span class="eyebrow">Finished games</span></div><div class="perf">` +
+    (D.over.length ? `<section class="up"><h3>Overperformers</h3><ol>${D.over.map(perfItem).join('')}</ol></section>` : '') +
+    (D.under.length ? `<section class="down"><h3>Disappointments</h3><ol>${D.under.map(perfItem).join('')}</ol></section>` : '') + `</div></section>`;
+
+  h += `<section><div class="sec-h"><h2>Viewing priority</h2><span class="eyebrow">Watchability</span></div><div class="rank">` +
+    ranked.map((g,i) => `<a href="#g${esc(g.id)}"><span class="rk">${i+1}</span>
+      <span class="mu ${g.state==='post'?'final':''}"><b>${g.away_emoji} ${esc(g.away_name)} vs ${g.home_emoji} ${esc(g.home_name)}</b>
+      <small>${gameLine(g)}</small></span>
+      <span class="meter"><span class="val">${g.watch_emoji} ${g.watch}%</span><span class="bar"><i class="${g.watch<50?'cold':''}" style="width:${g.watch}%"></i></span></span></a>`).join('') +
+    `</div></section>`;
+
+  h += `<section class="slots" style="display:flex;flex-direction:column;gap:26px"><div class="sec-h"><h2>Every game</h2><span class="eyebrow">By kickoff</span></div>` +
+    slots.map(s => `<div class="slot"><h3>${esc(s.k)}</h3>` + s.g.map(g => `
+      <article class="game" id="g${esc(g.id)}">
+        <div class="ghead">
+          <div class="teams">${g.away_emoji} ${esc(g.away_name)} <span class="rec">(${esc(g.away_rec)})</span><span class="vs">vs</span>${g.home_emoji} ${esc(g.home_name)} <span class="rec">(${esc(g.home_rec)})</span></div>
+          <div class="meta"><span>🏟️ ${esc(g.venue)} · 📍 ${esc(g.city)}</span><span>🌤️ ${esc(g.weather)}</span>${g.state!=='pre'?`<span>${gameLine(g)}</span>`:''}</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="k">Watchability</span><span class="v">${g.watch_emoji} ${g.watch}%</span></div>
+          <div class="stat"><span class="k">Overall rooting</span><span class="v">${esc(g.overall)}</span></div>
+          ${g.proj ? `<div class="stat"><span class="k">Projected points</span><span class="v">You ${g.proj[0].toFixed(1)} · Opp ${g.proj[1].toFixed(1)}</span>${g.proj[2] ? `<span class="note">${g.proj[2]} without a projection, counted as 0</span>` : ''}</div>` : ''}
+        </div>
+        ${g.charts.length ? `<div class="lghead"><span>League</span><span>Your players</span><span>Opponent players</span><span>Rooting</span></div><div class="leagues">` +
+          g.charts.map(c => `<div class="lg">
+            <div class="name"><span>${esc(c.league)}${c.pts ? `<span class="rowpts">You ${f1(c.pts[0])} · Opp ${f1(c.pts[1])} in this game</span>` : ''}</span> <span class="pill ${pillClass(c.rooting)}">${esc(c.rooting)}</span></div>
+            <div class="plist you"><span class="lab">You</span>${c.user.length ? c.user.map(player).join('') : '<span class="none">—</span>'}</div>
+            <div class="plist opp"><span class="lab">Opponent</span>${c.opp.length ? c.opp.map(player).join('') : '<span class="none">—</span>'}</div>
+            <span class="pill ${pillClass(c.rooting)}">${esc(c.rooting)}</span></div>`).join('') + `</div>`
+          : `<div class="empty">No direct fantasy exposure</div>`}
+      </article>`).join('') + `</div>`).join('') + `</section>`;
+
+  h += `<footer>${theirs.length ? `Opponent players that couldn't be matched (left out of scores): ${theirs.map(u => `${esc(u.name)} (${esc(u.league)})`).join(', ')}.<br>` : ''}${esc(D.audit)}</footer>`;
+  document.getElementById('app').innerHTML = h;
+}
+render();
+</script>
